@@ -2,7 +2,7 @@ const pool = require('./../db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-exports.userAutorization = async (req, res) => {
+exports.login = async (req, res) => {
     const { phone, password } = req.body;
 
     const user = await pool.query('SELECT * FROM users WHERE phone = $1', [ phone ]);

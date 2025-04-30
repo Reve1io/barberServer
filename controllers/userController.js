@@ -1,5 +1,6 @@
 const pool = require('./../db');
 const bcrypt = require('bcryptjs');
+const autenticate = require('../middleware/auth');
 
 exports.createUser = async (req, res) => {
     console.log("request body:", JSON.stringify(req.body));
@@ -31,7 +32,9 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-exports.getUserById = async (req, res) => {
+exports.getUserById = [
+    autenticate,
+    async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -46,7 +49,8 @@ exports.getUserById = async (req, res) => {
         console.error(err);
         res.status(500).json({error: err.message});
     }
-};
+}
+];
 
 exports.updateUser = async (req, res) => {
     const { id } = req.params;

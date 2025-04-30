@@ -1,18 +1,36 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
-exports.verifyToken = async (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+const authenticate = async (req, res, next) => {
 
-    if (!token) {
-        return res.status(401).json({error: 'No token provided' });
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({
+            success: false,
+            message: 'Authorization header missing or invalid'
+        });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).send({error: 'Invalid token'});
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+        req.user = decoded;
+        next();
+    } catch (err) {
+        // 3. Обрабатываем разные типы ошибок
+        let message = 'Invalid token';
+        if (err.name === 'TokenExpiredError') {
+            message = 'Token expired';
+        } else if (err.name === 'JsonWebTokenError') {
+            message = 'Malformed token';
         }
 
-        req.userId = decoded.userId;
-        next();
-    });
+        return res.status(403).json({
+            success: false,
+            message
+        });
+    }
 };
+
+module.exports = authenticate;
