@@ -12,3 +12,12 @@ exports.createRecord = async (req, res) => {
         res.status(500).json({error: err.message});
     }
 }
+
+exports.getAllRecords = async (req, res) => {
+    try {
+        const result = pool.query('SELECT * FROM Records');
+        res.status(200).json(result.rows);
+    } catch (err) {
+        res.status(500).json({error: err.message});
+    }
+}
