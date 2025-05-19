@@ -3,9 +3,6 @@ const router = express.Router();
 const loginController = require('./../controllers/loginController');
 const {verifyToken} = require("../middleware/auth");
 
-router.post('/', loginController.login)
-router.get('/profile', verifyToken, (req, res) => {
-    res.json({message: 'Secure data', userId: req.user.id});
-});
+router.post('/login', loginController.login)
 
 module.exports = router;
